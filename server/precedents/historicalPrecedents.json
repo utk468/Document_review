@@ -1,0 +1,52 @@
+[
+  {
+    "precedent_id": "PREC-8812",
+    "document_title": "Apex Yield Fund - Custom Client Agreement (Doc #8812)",
+    "officer_name": "Officer Bob Martinez",
+    "decision": "REJECTED",
+    "date": "2026-09-14",
+    "tags": ["guaranteed return", "FINRA-2210", "missing DISC-09", "zero risk"],
+    "summary_text": "Advisor promised guaranteed 18% annual return on private client portfolio without market risk and omitted mandatory past performance disclaimer DISC-09.",
+    "officer_notes": "Rejected: Violates FINRA-2210. Unapproved return guarantees can trigger immediate SEC sanction. Requires full rewrite removing risk-free claims and inserting DISC-09 disclaimer."
+  },
+  {
+    "precedent_id": "PREC-7621",
+    "document_title": "Horizon Alpha Growth Brochure (Doc #7621)",
+    "officer_name": "Officer Sarah Jenkins",
+    "decision": "REJECTED",
+    "date": "2026-08-22",
+    "tags": ["pure upside", "FINRA-2210-BAL", "unbalanced marketing"],
+    "summary_text": "Marketing brochure promised limitless astronomical upside without disclosing standard market risk factors or downside probability distributions.",
+    "officer_notes": "Rejected: Unbalanced marketing violation under FINRA-2210-BAL. Marketing team must add 2-paragraph downside risk summary and font size of risks must equal rewards."
+  },
+  {
+    "precedent_id": "PREC-9044",
+    "document_title": "Institutional Managed Account Agreement (Doc #9044)",
+    "officer_name": "Officer Michael Chang",
+    "decision": "APPROVED",
+    "date": "2026-09-28",
+    "tags": ["compliant", "balanced", "proper disclosures", "clean"],
+    "summary_text": "Standard wealth management agreement featuring complete DISC-09 and DISC-02 clauses, transparent fee schedules, and no guarantee claims.",
+    "officer_notes": "Approved without conditions. Follows firm standard legal template ver. 4.2 with all disclosures properly styled and prominent."
+  },
+  {
+    "precedent_id": "PREC-6415",
+    "document_title": "Quarterly Market Outlook Newsletter (Doc #6415)",
+    "officer_name": "Officer Elena Rostova",
+    "decision": "REJECTED",
+    "date": "2026-07-11",
+    "tags": ["tax loophole", "FINRA-TAX-WARN", "unqualified advice"],
+    "summary_text": "Newsletter claimed clients could legally eliminate all capital gains taxes using off-shore trust arrangements without citing tax counsel disclaimer.",
+    "officer_notes": "Rejected: Violates FINRA-TAX-WARN. Financial advisers are not licensed tax attorneys. Must add DISC-12 tax disclaimer and delete 'guaranteed tax-free' phrasing."
+  },
+  {
+    "precedent_id": "PREC-5502",
+    "document_title": "Private Placement Offering Memo (Doc #5502)",
+    "officer_name": "Officer David Vance",
+    "decision": "REJECTED",
+    "date": "2026-05-30",
+    "tags": ["FINRA-3280", "private side deal", "off-book"],
+    "summary_text": "Document solicited direct investor funds outside firm custodian into an unapproved real estate LLC syndication.",
+    "officer_notes": "Immediate escalation and rejection. Potential selling away under FINRA-3280. Referred to Chief Compliance Officer."
+  }
+]

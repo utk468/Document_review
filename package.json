@@ -1,0 +1,19 @@
+{
+  "name": "compliance-document-review",
+  "version": "1.0.0",
+  "description": "Enterprise AI Compliance Review System with PII Masking, Grounded Anti-Hallucination Inspection, and Absence Harness",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test tests/*.test.js",
+    "eval": "node eval/runEval.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "groq-sdk": "^1.6.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}

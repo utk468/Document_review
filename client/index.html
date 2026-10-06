@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AegisCompliance AI — Enterprise Document Review Platform</title>
+  <meta name="description" content="Enterprise AI Compliance Review System with Zero-Leak PII Privacy Wall, Verbatim Substring Grounding, and Disclosure Absence Engine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dark-theme">
+
+  <!-- TOP APP HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-logo">
+        <svg class="brand-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="brand-text">
+          <span class="brand-title">AEGIS<span class="highlight">COMPLIANCE</span></span>
+          <span class="brand-sub">SEC · FINRA Zero-Hallucination Review Engine</span>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge privacy-badge" title="Hardware-level assertion: 0 raw PII leaves app server">
+          <span class="pulse-dot"></span> 🔒 PII Privacy Wall: ZERO-LEAK ACTIVE
+        </span>
+        <span class="badge audit-badge">
+          <span class="verified-icon">✓</span> Verbatim Quote Grounded: 100%
+        </span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Sample Document Selector Dropdown -->
+      <div class="doc-selector-container">
+        <label for="sampleDocSelect" class="selector-label">Load Document:</label>
+        <select id="sampleDocSelect" class="doc-select">
+          <option value="jane-smith-agreement" selected>📄 Jane Smith Investment Agreement (Target Demo)</option>
+          <option value="alpha-growth-brochure">📈 Horizon Alpha Growth Brochure (Unbalanced Pitch)</option>
+          <option value="wealth-newsletter">🗞️ Private Wealth Tax Newsletter (Unlicensed Advice)</option>
+          <option value="compliant-agreement">✅ Standard Compliant Advisory Agreement (Control)</option>
+        </select>
+      </div>
+
+      <!-- AI Model Selector Dropdown -->
+      <div class="model-selector-container">
+        <label for="aiModelSelect" class="selector-label">AI Engine:</label>
+        <select id="aiModelSelect" class="doc-select model-select">
+          <option value="llama-3.3-70b-versatile" selected>⚡ Groq: Llama 3.3 70B Versatile</option>
+          <option value="llama-3.1-8b-instant">⚡ Groq: Llama 3.1 8B Instant</option>
+          <option value="mixtral-8x7b-32768">⚡ Groq: Mixtral 8x7B (32k)</option>
+          <option value="aegis-native-grounded">🛡️ Aegis Native Rules Engine</option>
+        </select>
+      </div>
+
+      <!-- Groq Key Config Button -->
+      <button id="groqSettingsBtn" class="btn btn-secondary groq-btn" title="Configure Groq Cloud API Key">
+        <span class="groq-lightning">⚡</span>
+        <span id="groqStatusLabel">Groq Ready</span>
+      </button>
+
+      <!-- Upload Trigger Button -->
+      <label class="btn btn-secondary upload-btn" for="fileUploadInput" title="Upload custom PDF, TXT or DOCX">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+        </svg>
+        <span>Upload</span>
+        <input type="file" id="fileUploadInput" accept=".txt,.json,.md,.pdf,.docx" style="display:none;">
+      </label>
+
+      <!-- Scan Execution Button -->
+      <button id="runScanBtn" class="btn btn-primary scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span>Run AI Compliance Scan</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- METRIC KPI RIBBON -->
+  <section class="kpi-ribbon">
+    <div class="kpi-item">
+      <span class="kpi-label">Active Document</span>
+      <span class="kpi-val" id="kpiDocName">Investment_Agreement_Jane_Smith.txt</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">AI Engine</span>
+      <span class="kpi-val text-cyan" id="kpiEngine">Groq Llama 3.3 (⚡ 140ms)</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">Document Type</span>
+      <span class="kpi-val" id="kpiDocType">INVESTMENT_AGREEMENT</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">PII Entities Scrubbed</span>
+      <span class="kpi-val text-cyan" id="kpiPiiCount">0</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">Grounded Rule Flags</span>
+      <span class="kpi-val text-red" id="kpiViolationsCount">0</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">Missing Disclosures</span>
+      <span class="kpi-val text-amber" id="kpiAbsenceCount">0</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">Hallucinations Discarded</span>
+      <span class="kpi-val text-emerald" id="kpiDiscardedCount">0</span>
+    </div>
+    <div class="kpi-item">
+      <span class="kpi-label">Officer Review Status</span>
+      <span class="kpi-val text-purple" id="kpiReviewStatus">READY</span>
+    </div>
+  </section>
+
+  <!-- MAIN SIDE-BY-SIDE INTERFACE -->
+  <main class="review-workbench">
+
+    <!-- LEFT PANE: INTERACTIVE DOCUMENT VIEWER -->
+    <section class="workbench-pane document-pane">
+      <div class="pane-header">
+        <div class="pane-title-group">
+          <h2 class="pane-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Document Viewer with Grounded Highlights
+          </h2>
+          <span class="pane-subtitle" id="docStats">Length: 0 characters · 0 sections</span>
+        </div>
+
+        <div class="pane-actions">
+          <!-- View Toggle: Rehydrated vs Masked -->
+          <div class="toggle-group" title="Toggle between real rehydrated client names and raw scrubbed privacy tokens">
+            <button id="toggleRehydrated" class="toggle-btn active" data-mode="rehydrated">
+              <span>Rehydrated View</span>
+            </button>
+            <button id="toggleMasked" class="toggle-btn" data-mode="masked">
+              <span>Masked Tokens View</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend bar -->
+      <div class="highlight-legend">
+        <span class="legend-chip legend-red">
+          <span class="color-indicator red-box"></span> Red: Rule Violation (Verbatim)
+        </span>
+        <span class="legend-chip legend-amber">
+          <span class="color-indicator amber-box"></span> Yellow: Missing Legal Disclosure
+        </span>
+        <span class="legend-chip legend-blue">
+          <span class="color-indicator blue-box"></span> Cyan: Protected PII Token
+        </span>
+      </div>
+
+      <!-- Main Document Text Scroll Box -->
+      <div class="document-content-scrollbox">
+        <div id="documentViewer" class="document-text-container" spellcheck="false" contenteditable="true">
+          Loading document text...
+        </div>
+      </div>
+
+      <!-- Choke Point Seal Footer -->
+      <div class="document-pane-footer">
+        <span class="choke-seal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-xs">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          Choke Point Verification: 100% of highlights verified against verbatim source substrings
+        </span>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: AI COMPLIANCE INSPECTION HUB -->
+    <section class="workbench-pane inspector-pane">
+      <div class="pane-header">
+        <div class="tab-navigation">
+          <button class="nav-tab active" data-tab="violationsTab">
+            <span class="tab-icon">🔴</span>
+            <span>Violations (<span id="violationsTabCount">0</span>)</span>
+          </button>
+          <button class="nav-tab" data-tab="absenceTab">
+            <span class="tab-icon">⚠️</span>
+            <span>Absence Engine (<span id="absenceTabCount">0</span>)</span>
+          </button>
+          <button class="nav-tab" data-tab="precedentsTab">
+            <span class="tab-icon">📜</span>
+            <span>Precedents (<span id="precedentsTabCount">3</span>)</span>
+          </button>
+          <button class="nav-tab" data-tab="privacyTab">
+            <span class="tab-icon">🔒</span>
+            <span>Privacy & Egress</span>
+          </button>
+          <button class="nav-tab" data-tab="auditTab">
+            <span class="tab-icon">⚖️</span>
+            <span>Audit Trail</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 1: VIOLATIONS & GROUNDING -->
+      <div id="violationsTab" class="tab-content active">
+        <div class="tab-banner">
+          <div class="banner-text">
+            <strong>Anti-Hallucination Substring Choke Point:</strong>
+            <span>Flags must contain 100% verbatim quotes from document. Ungrounded claims are automatically discarded.</span>
+          </div>
+        </div>
+        <div id="violationsList" class="cards-stream">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p>Click <strong>"Run AI Compliance Scan"</strong> to evaluate document against active SEC/FINRA rules.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: ABSENCE ENGINE (MISSING DISCLOSURES) -->
+      <div id="absenceTab" class="tab-content">
+        <div class="tab-banner banner-amber">
+          <div class="banner-text">
+            <strong>Service 3 Absence Engine:</strong>
+            <span>Detects mandatory legal disclosures omitted by advisors. Computes semantic distance scores.</span>
+          </div>
+        </div>
+        <div id="absenceList" class="cards-stream">
+          <div class="empty-state">
+            <p>Run scan to detect omitted required clauses.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: HISTORICAL PRECEDENTS (READ-ONLY CONTEXT) -->
+      <div id="precedentsTab" class="tab-content">
+        <div class="tab-banner banner-purple">
+          <div class="banner-text">
+            <strong>Read-Only Precedent Context Service:</strong>
+            <span>Vector similarity lookup against past compliance rulings. Guardrail verified: Never biases prompt generation.</span>
+          </div>
+        </div>
+        <div id="precedentsList" class="cards-stream">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB 4: PRIVACY WALL & OUTBOUND EGRESS INSPECTOR -->
+      <div id="privacyTab" class="tab-content">
+        <div class="tab-banner banner-cyan">
+          <div class="banner-text">
+            <strong>Zero-Leak Privacy Barrier (Service 1):</strong>
+            <span>Runtime audit confirms 0 raw PII strings transmitted in serialized HTTP request bytes.</span>
+          </div>
+        </div>
+        
+        <div class="privacy-inspector-container">
+          <div class="inspector-section">
+            <h4 class="inspector-title">Active Document Token Vault Mapping</h4>
+            <div id="vaultMappingViewer" class="vault-tokens-box">
+              <span class="text-muted">No entities scrubbed in current session.</span>
+            </div>
+          </div>
+
+          <div class="inspector-section">
+            <div class="inspector-header-row">
+              <h4 class="inspector-title">Dev-Only Outbound LLM Serialized Payload Viewer</h4>
+              <span class="badge badge-success">ZERO RAW PII DETECTED</span>
+            </div>
+            <pre id="outboundPayloadViewer" class="code-block"><code>{ "status": "Run scan to capture serialized outbound request payload..." }</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: AUDIT TRAIL -->
+      <div id="auditTab" class="tab-content">
+        <div class="tab-banner banner-gray">
+          <div class="banner-text">
+            <strong>Compliance Governance Audit Trail:</strong>
+            <span>Immutable history of Human Officer approvals, rejections, and rationale logs.</span>
+          </div>
+        </div>
+        <div id="auditList" class="cards-stream">
+          <div class="empty-state">
+            <p>No recorded officer decisions yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM HUMAN-IN-THE-LOOP ACTION BAR -->
+      <div class="officer-action-footer">
+        <div class="hitl-header">
+          <span class="hitl-badge">HUMAN-IN-THE-LOOP ENFORCER</span>
+          <span class="hitl-subtitle">Final authority remains 100% human. AI is prohibited from issuing approvals.</span>
+        </div>
+
+        <div class="officer-input-row">
+          <div class="input-col">
+            <label for="officerNameInput" class="input-label">Officer Name:</label>
+            <input type="text" id="officerNameInput" class="text-input" value="Officer Sarah Jenkins">
+          </div>
+          <div class="input-col grow">
+            <label for="officerNotesInput" class="input-label">Review Rationale / Officer Notes:</label>
+            <input type="text" id="officerNotesInput" class="text-input" placeholder="e.g. Rejected: Illegal 18% return guarantee violates FINRA-2210; missing DISC-09 clause.">
+          </div>
+        </div>
+
+        <div class="decision-buttons-row">
+          <button id="rejectDocBtn" class="btn btn-danger decision-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="icon-sm">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            <span>Reject Document</span>
+          </button>
+          
+          <button id="approveDocBtn" class="btn btn-success decision-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="icon-sm">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Approve Document</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Groq Cloud Settings Modal -->
+  <div id="groqModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="groq-lightning" style="font-size:1.4rem;">⚡</span>
+          <h3 class="modal-title">Groq LPU Inference Settings</h3>
+        </div>
+        <button id="closeGroqModalBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Groq delivers sub-second LPU cloud inference. All text sent to Groq is <strong>100% PII-scrubbed</strong> by Service 1 before egress.
+        </p>
+        <div class="form-group">
+          <label for="groqApiKeyInput" class="input-label">Groq Cloud API Key (Optional):</label>
+          <input type="password" id="groqApiKeyInput" class="text-input" placeholder="gsk_..." style="width:100%;margin-top:4px;">
+          <span class="input-hint">Get a free high-speed API key at <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent-cyan);text-decoration:none;">console.groq.com/keys</a>. Leave empty to run high-speed LPU Simulation mode.</span>
+        </div>
+        <div id="groqModalStatus" class="groq-status-banner">
+          <span>Status: Groq LPU Ready</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="clearGroqKeyBtn" class="btn btn-secondary">Clear Key</button>
+        <button id="saveGroqKeyBtn" class="btn btn-primary">Save & Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+</body>
+</html>

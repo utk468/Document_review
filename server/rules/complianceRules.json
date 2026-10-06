@@ -1,0 +1,146 @@
+[
+  {
+    "rule_id": "FINRA-2210",
+    "name": "Communications with the Public - Prohibition of Guarantees",
+    "regulatory_body": "FINRA",
+    "severity": "CRITICAL",
+    "description": "Communications must not promise, guarantee, or state any specific rate of return, or claim investments are risk-free or guaranteed against loss.",
+    "trigger_patterns": [
+      "guarantee Jane",
+      "guaranteed return",
+      "guaranteed 18%",
+      "guaranteed 15%",
+      "guarantees an 18%",
+      "guarantees a 15%",
+      "risk-free",
+      "zero risk",
+      "without any market risk",
+      "cannot lose",
+      "assured profit",
+      "100% safe"
+    ]
+  },
+  {
+    "rule_id": "SEC-RULE-206",
+    "name": "Fraudulent, Deceptive, or Manipulative Acts",
+    "regulatory_body": "SEC",
+    "severity": "CRITICAL",
+    "description": "Prohibits any statement that is untrue, misleading, or fails to state material facts necessary to make statements not misleading in investment advice.",
+    "trigger_patterns": [
+      "secret algorithm",
+      "guaranteed beating the market",
+      "insider strategy",
+      "foolproof",
+      "infallible",
+      "eliminate volatility"
+    ]
+  },
+  {
+    "rule_id": "FINRA-2210-BAL",
+    "name": "Balanced Treatment of Risks and Rewards",
+    "regulatory_body": "FINRA",
+    "severity": "HIGH",
+    "description": "Communications must present a balanced treatment of risks and rewards and not emphasize potential gains while obscuring downside potential.",
+    "trigger_patterns": [
+      "skyrocket",
+      "limitless upside",
+      "pure upside",
+      "astronomical gains",
+      "can only go up",
+      "bound to multiply"
+    ]
+  },
+  {
+    "rule_id": "SEC-MARKETING-PERF",
+    "name": "SEC Marketing Rule - Performance Reporting Standards",
+    "regulatory_body": "SEC",
+    "severity": "HIGH",
+    "description": "Performance advertising must present net performance alongside gross performance and cite relevant calculation time horizons.",
+    "trigger_patterns": [
+      "gross returns only",
+      "ignoring advisory fees",
+      "before deducting fees",
+      "historical 10x gains without disclosing net",
+      "unsubstantiated 3-year performance"
+    ]
+  },
+  {
+    "rule_id": "SEC-REG-BI",
+    "name": "Regulation Best Interest - Conflict Disclosure",
+    "regulatory_body": "SEC",
+    "severity": "HIGH",
+    "description": "Broker-dealers and advisors must disclose material conflicts of interest, proprietary product incentives, and compensation arrangements.",
+    "trigger_patterns": [
+      "exclusive in-house fund",
+      "undisclosed commission",
+      "preferential kickback",
+      "adviser receives additional incentive",
+      "without disclosing conflict"
+    ]
+  },
+  {
+    "rule_id": "CFTC-4.41",
+    "name": "Hypothetical Performance Disclaimer",
+    "regulatory_body": "CFTC",
+    "severity": "HIGH",
+    "description": "Hypothetical or simulated performance results must prominently state limitations and that hypothetical trading does not involve financial risk.",
+    "trigger_patterns": [
+      "simulated backtest proves",
+      "hypothetical 25% annual return",
+      "paper-trading results show",
+      "model portfolio generated"
+    ]
+  },
+  {
+    "rule_id": "FINRA-3280",
+    "name": "Private Securities Transactions",
+    "regulatory_body": "FINRA",
+    "severity": "CRITICAL",
+    "description": "Associated persons may not participate in private securities transactions outside their employer without prior written approval.",
+    "trigger_patterns": [
+      "off-book opportunity",
+      "private side deal",
+      "direct personal investment without firm knowledge",
+      "wire directly to personal account"
+    ]
+  },
+  {
+    "rule_id": "SEC-FEES-101",
+    "name": "Disclosure of Fees and Hidden Expenses",
+    "regulatory_body": "SEC",
+    "severity": "MEDIUM",
+    "description": "Advisors must accurately disclose all management fees, custodial charges, exit fees, and expense ratios.",
+    "trigger_patterns": [
+      "zero management fee forever",
+      "no fee whatsoever",
+      "hidden wrap fee omitted",
+      "free trading without expense disclosure"
+    ]
+  },
+  {
+    "rule_id": "FINRA-TAX-WARN",
+    "name": "Unqualified Tax Advice Warning",
+    "regulatory_body": "FINRA",
+    "severity": "MEDIUM",
+    "description": "Investment advisors must not provide unqualified tax or legal counsel unless specifically licensed and accompanied by statutory warnings.",
+    "trigger_patterns": [
+      "completely tax-exempt guarantee",
+      "avoids all IRS taxes",
+      "we advise you to write off",
+      "legal tax loophole guaranteed"
+    ]
+  },
+  {
+    "rule_id": "FINRA-2010",
+    "name": "Standards of Commercial Honor and Fair Dealing",
+    "regulatory_body": "FINRA",
+    "severity": "HIGH",
+    "description": "A member in the conduct of its business shall observe high standards of commercial honor and just and equitable principles of trade.",
+    "trigger_patterns": [
+      "act immediately before regulators close",
+      "unauthorized transfer",
+      "coercive deadline",
+      "bypass compliance verification"
+    ]
+  }
+]

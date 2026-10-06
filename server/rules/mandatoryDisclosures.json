@@ -1,0 +1,110 @@
+{
+  "INVESTMENT_AGREEMENT": [
+    {
+      "disclosure_id": "DISC-09",
+      "name": "Past Performance Disclaimer",
+      "required_text": "Past performance is no guarantee of future results. Investment value and returns will fluctuate, and investors may lose money.",
+      "keywords": [
+        "past performance",
+        "future results",
+        "guarantee of future",
+        "may lose money",
+        "fluctuate"
+      ],
+      "severity": "CRITICAL",
+      "description": "Mandatory disclaimer warning clients that historical investment returns do not predict future market outcomes."
+    },
+    {
+      "disclosure_id": "DISC-02",
+      "name": "Risk of Loss of Principal",
+      "required_text": "All investments involve risk of loss, including the possible loss of principal invested. Diversification does not assure profit.",
+      "keywords": [
+        "loss of principal",
+        "risk of loss",
+        "market risk",
+        "not FDIC insured"
+      ],
+      "severity": "CRITICAL",
+      "description": "Mandatory notice that capital is subject to market fluctuation and principal reduction."
+    },
+    {
+      "disclosure_id": "DISC-05",
+      "name": "Registered Investment Adviser (RIA) Disclosure",
+      "required_text": "Advisory services provided by Aegis Wealth Partners, a Registered Investment Adviser with the U.S. Securities and Exchange Commission (SEC). Registration does not imply a certain level of skill or training.",
+      "keywords": [
+        "registered investment adviser",
+        "sec registration",
+        "does not imply a certain level of skill"
+      ],
+      "severity": "HIGH",
+      "description": "Mandatory SEC registration disclosure stating that SEC registration does not imply endorsement."
+    }
+  ],
+  "MARKETING_BROCHURE": [
+    {
+      "disclosure_id": "DISC-09",
+      "name": "Past Performance Disclaimer",
+      "required_text": "Past performance does not guarantee future results. Performance data quoted represents past performance and current performance may be lower or higher.",
+      "keywords": [
+        "past performance",
+        "does not guarantee",
+        "future results",
+        "performance data quoted"
+      ],
+      "severity": "CRITICAL",
+      "description": "Required on all promotional brochures showcasing fund returns."
+    },
+    {
+      "disclosure_id": "DISC-12",
+      "name": "Tax and Legal Counsel Disclaimer",
+      "required_text": "This material has been prepared for informational purposes only, and is not intended to provide, and should not be relied on for, tax, legal, or accounting advice. You should consult your own tax, legal, and accounting advisors before engaging in any transaction.",
+      "keywords": [
+        "tax, legal, or accounting advice",
+        "consult your own tax",
+        "informational purposes only"
+      ],
+      "severity": "MEDIUM",
+      "description": "Disclaimer protecting the firm against unauthorized tax or legal advisory claims."
+    }
+  ],
+  "NEWSLETTER": [
+    {
+      "disclosure_id": "DISC-09",
+      "name": "Past Performance Disclaimer",
+      "required_text": "Past performance is no guarantee of future results.",
+      "keywords": ["past performance", "future results"],
+      "severity": "HIGH",
+      "description": "Standard newsletter past performance disclaimer."
+    },
+    {
+      "disclosure_id": "DISC-12",
+      "name": "Informational Non-Solicitation Notice",
+      "required_text": "This commentary does not constitute an offer to buy or sell any security. Content is for informational purposes only.",
+      "keywords": [
+        "does not constitute an offer",
+        "informational purposes only",
+        "buy or sell any security"
+      ],
+      "severity": "MEDIUM",
+      "description": "Prohibits public newsletters from acting as unverified securities solicitations."
+    }
+  ],
+  "ACCOUNT_AGREEMENT": [
+    {
+      "disclosure_id": "DISC-02",
+      "name": "Risk of Loss of Principal",
+      "required_text": "Securities investments are not bank deposits, are not FDIC insured, and may lose value.",
+      "keywords": ["not fdic insured", "lose value", "not bank deposits"],
+      "severity": "CRITICAL",
+      "description": "Banking vs brokerage risk demarcation."
+    },
+    {
+      "disclosure_id": "DISC-05",
+      "name": "SIPC & Regulatory Membership",
+      "required_text": "Member FINRA/SIPC. Account protection does not protect against market fluctuations.",
+      "keywords": ["finra", "sipc", "member finra/sipc"],
+      "severity": "HIGH",
+      "description": "Mandatory SIPC member designation on account opening documents."
+    }
+  ]
+}
