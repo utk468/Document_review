@@ -1,6 +1,7 @@
 /**
- * AEGIS COMPLIANCE AI — FRONTEND CLIENT APPLICATION
- * Side-by-Side Review Panel, Verbatim Highlight Sync, and Privacy Vault Inspector
+ * AEGIS COMPLIANCE — INSTITUTIONAL DOCUMENT REVIEW DESK
+ * Enterprise Frontend Application Logic
+ * Verbatim Substring Highlight Sync, Zero-PII Egress Verification, and Supervisory Sign-Off
  */
 
 let currentDocId = 'jane-smith-agreement';
@@ -12,16 +13,18 @@ let currentMode = 'rehydrated'; // 'rehydrated' or 'masked'
 let lastInspectionResult = null;
 let sampleDocsMap = {};
 
-// DOM Elements
+// DOM Elements: Header Controls
 const sampleDocSelect = document.getElementById('sampleDocSelect');
+const aiModelSelect = document.getElementById('aiModelSelect');
+const groqSettingsBtn = document.getElementById('groqSettingsBtn');
+const groqStatusLabel = document.getElementById('groqStatusLabel');
 const fileUploadInput = document.getElementById('fileUploadInput');
 const runScanBtn = document.getElementById('runScanBtn');
-const documentViewer = document.getElementById('documentViewer');
-const toggleRehydrated = document.getElementById('toggleRehydrated');
-const toggleMasked = document.getElementById('toggleMasked');
-const docStats = document.getElementById('docStats');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeIconSun = document.getElementById('themeIconSun');
+const themeIconMoon = document.getElementById('themeIconMoon');
 
-// KPI elements
+// DOM Elements: Context & Metadata Strip
 const kpiDocName = document.getElementById('kpiDocName');
 const kpiDocType = document.getElementById('kpiDocType');
 const kpiPiiCount = document.getElementById('kpiPiiCount');
@@ -29,10 +32,17 @@ const kpiViolationsCount = document.getElementById('kpiViolationsCount');
 const kpiAbsenceCount = document.getElementById('kpiAbsenceCount');
 const kpiDiscardedCount = document.getElementById('kpiDiscardedCount');
 const kpiReviewStatus = document.getElementById('kpiReviewStatus');
+const kpiEngine = document.getElementById('kpiEngine');
 
-// Tab elements
-const navTabs = document.querySelectorAll('.nav-tab');
-const tabContents = document.querySelectorAll('.tab-content');
+// DOM Elements: Document Desk (Left Pane)
+const documentViewer = document.getElementById('documentViewer');
+const toggleRehydrated = document.getElementById('toggleRehydrated');
+const toggleMasked = document.getElementById('toggleMasked');
+const docStats = document.getElementById('docStats');
+
+// DOM Elements: Compliance Sidebar Tabs (Right Pane)
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabPanes = document.querySelectorAll('.tab-pane');
 const violationsTabCount = document.getElementById('violationsTabCount');
 const absenceTabCount = document.getElementById('absenceTabCount');
 const precedentsTabCount = document.getElementById('precedentsTabCount');
@@ -43,39 +53,76 @@ const vaultMappingViewer = document.getElementById('vaultMappingViewer');
 const outboundPayloadViewer = document.getElementById('outboundPayloadViewer');
 const auditList = document.getElementById('auditList');
 
-// Groq and Model elements
-const aiModelSelect = document.getElementById('aiModelSelect');
-const groqSettingsBtn = document.getElementById('groqSettingsBtn');
-const groqStatusLabel = document.getElementById('groqStatusLabel');
+// DOM Elements: Officer Supervisory Sign-Off Console
+const officerNameInput = document.getElementById('officerNameInput');
+const officerNotesInput = document.getElementById('officerNotesInput');
+const rejectDocBtn = document.getElementById('rejectDocBtn');
+const approveDocBtn = document.getElementById('approveDocBtn');
+
+// DOM Elements: Groq Settings Modal
 const groqModal = document.getElementById('groqModal');
 const closeGroqModalBtn = document.getElementById('closeGroqModalBtn');
 const groqApiKeyInput = document.getElementById('groqApiKeyInput');
 const groqModalStatus = document.getElementById('groqModalStatus');
 const saveGroqKeyBtn = document.getElementById('saveGroqKeyBtn');
 const clearGroqKeyBtn = document.getElementById('clearGroqKeyBtn');
-const kpiEngine = document.getElementById('kpiEngine');
 
 /**
  * Initialize Application
  */
 async function initApp() {
+  initTheme();
   setupEventListeners();
   await loadSampleDocuments();
   await loadDecisionsAudit();
   await checkGroqStatus();
-  
-  // Auto-run scan on target Jane Smith document for instant wow effect
+
+  // Run initial compliance review on Jane Smith agreement for instant evaluation
   runComplianceScan();
+}
+
+/**
+ * Theme Management (Light by default, Dark optional)
+ */
+function initTheme() {
+  const savedTheme = localStorage.getItem('aegis_theme') || 'light';
+  applyTheme(savedTheme);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('aegis_theme', theme);
+
+  if (theme === 'dark') {
+    if (themeIconSun) themeIconSun.style.display = 'none';
+    if (themeIconMoon) themeIconMoon.style.display = 'block';
+  } else {
+    if (themeIconSun) themeIconSun.style.display = 'block';
+    if (themeIconMoon) themeIconMoon.style.display = 'none';
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
 }
 
 /**
  * Setup Event Listeners
  */
 function setupEventListeners() {
-  // Document selector
-  sampleDocSelect.addEventListener('change', (e) => {
-    loadSelectedSample(e.target.value);
-  });
+  // Theme switcher
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
+
+  // Sample Document selector
+  if (sampleDocSelect) {
+    sampleDocSelect.addEventListener('change', (e) => {
+      loadSelectedSample(e.target.value);
+    });
+  }
 
   // AI Model selector
   if (aiModelSelect) {
@@ -91,35 +138,55 @@ function setupEventListeners() {
   if (clearGroqKeyBtn) clearGroqKeyBtn.addEventListener('click', clearGroqKey);
 
   // File Upload
-  fileUploadInput.addEventListener('change', handleFileUpload);
+  if (fileUploadInput) {
+    fileUploadInput.addEventListener('change', handleFileUpload);
+  }
 
-  // Scan trigger
-  runScanBtn.addEventListener('click', runComplianceScan);
+  // Run Scan Trigger
+  if (runScanBtn) {
+    runScanBtn.addEventListener('click', runComplianceScan);
+  }
 
-  // View toggle: Rehydrated vs Masked
-  toggleRehydrated.addEventListener('click', () => setViewMode('rehydrated'));
-  toggleMasked.addEventListener('click', () => setViewMode('masked'));
+  // View Mode: Client View vs Anonymized View
+  if (toggleRehydrated) {
+    toggleRehydrated.addEventListener('click', () => setViewMode('rehydrated'));
+  }
+  if (toggleMasked) {
+    toggleMasked.addEventListener('click', () => setViewMode('masked'));
+  }
 
-  // Document text manual edits
-  documentViewer.addEventListener('input', () => {
-    currentRawText = documentViewer.innerText;
-    updateDocStats();
-  });
+  // Manual Document Edits
+  if (documentViewer) {
+    documentViewer.addEventListener('input', () => {
+      currentRawText = documentViewer.innerText;
+      updateDocStats();
+    });
+  }
 
-  // Tab switching
-  navTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetId = tab.dataset.tab;
-      navTabs.forEach(t => t.classList.remove('active'));
-      tabContents.forEach(c => c.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(targetId).classList.add('active');
+  // Tab Navigation
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.tab;
+      tabButtons.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      tabPanes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      const targetPane = document.getElementById(targetId);
+      if (targetPane) targetPane.classList.add('active');
     });
   });
 
-  // Decision actions
-  rejectDocBtn.addEventListener('click', () => submitOfficerDecision('REJECTED'));
-  approveDocBtn.addEventListener('click', () => submitOfficerDecision('APPROVED'));
+  // Supervisory Officer Decisions
+  if (rejectDocBtn) {
+    rejectDocBtn.addEventListener('click', () => submitOfficerDecision('REJECTED'));
+  }
+  if (approveDocBtn) {
+    approveDocBtn.addEventListener('click', () => submitOfficerDecision('APPROVED'));
+  }
 }
 
 /**
@@ -155,25 +222,37 @@ function loadSelectedSample(docKey) {
   currentDocType = sample.type;
   currentRawText = sample.text;
 
-  kpiDocName.textContent = sample.title;
-  kpiDocType.textContent = sample.type;
-  kpiReviewStatus.textContent = 'READY';
-  kpiReviewStatus.className = 'kpi-val text-purple';
+  if (kpiDocName) kpiDocName.textContent = sample.title;
+  if (kpiDocType) kpiDocType.textContent = sample.type;
+  if (kpiReviewStatus) {
+    kpiReviewStatus.textContent = 'READY FOR REVIEW';
+    kpiReviewStatus.style.background = 'var(--bg-surface-tertiary)';
+    kpiReviewStatus.style.color = 'var(--text-secondary)';
+    kpiReviewStatus.style.border = '1px solid var(--border-default)';
+  }
 
   // Reset counters
-  kpiPiiCount.textContent = '0';
-  kpiViolationsCount.textContent = '0';
-  kpiAbsenceCount.textContent = '0';
-  kpiDiscardedCount.textContent = '0';
+  if (kpiPiiCount) kpiPiiCount.textContent = '0';
+  if (kpiViolationsCount) kpiViolationsCount.textContent = '0';
+  if (kpiAbsenceCount) kpiAbsenceCount.textContent = '0';
+  if (kpiDiscardedCount) kpiDiscardedCount.textContent = '0';
 
   // Render raw text
-  documentViewer.textContent = currentRawText;
+  if (documentViewer) {
+    documentViewer.textContent = currentRawText;
+  }
   updateDocStats();
 
-  // Reset tab lists
-  violationsList.innerHTML = `<div class="empty-state"><p>Click <strong>"Run AI Compliance Scan"</strong> to evaluate document.</p></div>`;
-  absenceList.innerHTML = `<div class="empty-state"><p>Run scan to detect omitted required clauses.</p></div>`;
-  precedentsList.innerHTML = '';
+  // Reset tab placeholders
+  if (violationsList) {
+    violationsList.innerHTML = `<div class="empty-placeholder"><p>Click <strong>"Run Compliance Review"</strong> to screen document against SEC/FINRA rules.</p></div>`;
+  }
+  if (absenceList) {
+    absenceList.innerHTML = `<div class="empty-placeholder"><p>Run compliance review to evaluate mandatory disclosures.</p></div>`;
+  }
+  if (precedentsList) {
+    precedentsList.innerHTML = '';
+  }
 }
 
 /**
@@ -198,13 +277,17 @@ async function handleFileUpload(e) {
     currentDocTitle = data.title;
     currentRawText = data.text;
 
-    kpiDocName.textContent = data.title;
-    kpiReviewStatus.textContent = 'UPLOADED';
+    if (kpiDocName) kpiDocName.textContent = data.title;
+    if (kpiReviewStatus) {
+      kpiReviewStatus.textContent = 'FILE UPLOADED';
+    }
 
-    documentViewer.textContent = currentRawText;
+    if (documentViewer) {
+      documentViewer.textContent = currentRawText;
+    }
     updateDocStats();
 
-    showToast(`Uploaded ${data.title} successfully!`, 'success');
+    showToast(`Uploaded ${data.title} successfully`, 'success');
     runComplianceScan();
   } catch (err) {
     console.error('File upload error:', err);
@@ -216,10 +299,14 @@ async function handleFileUpload(e) {
  * Run End-to-End Compliance Inspection (All 3 Services)
  */
 async function runComplianceScan() {
+  if (!runScanBtn) return;
   runScanBtn.disabled = true;
   runScanBtn.innerHTML = `
-    <span class="pulse-dot"></span>
-    <span>Inspecting Compliance...</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm" style="animation: spin 1s linear infinite;">
+      <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+      <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+    </svg>
+    <span>Analyzing Document...</span>
   `;
 
   try {
@@ -242,24 +329,35 @@ async function runComplianceScan() {
     lastInspectionResult = data;
     currentMaskedText = data.maskedText;
 
-    // Update KPI counters
-    kpiPiiCount.textContent = data.vaultSummary.entityCount;
-    kpiViolationsCount.textContent = data.complianceFlags.length;
-    kpiAbsenceCount.textContent = data.absenceFlags.length;
-    kpiDiscardedCount.textContent = data.discardedHallucinations.length;
-    kpiReviewStatus.textContent = data.reviewStatus;
-    kpiReviewStatus.className = 'kpi-val text-amber';
+    // Update context strip counters
+    if (kpiPiiCount) kpiPiiCount.textContent = data.vaultSummary.entityCount;
+    if (kpiViolationsCount) kpiViolationsCount.textContent = data.complianceFlags.length;
+    if (kpiAbsenceCount) kpiAbsenceCount.textContent = data.absenceFlags.length;
+    if (kpiDiscardedCount) kpiDiscardedCount.textContent = data.discardedHallucinations.length;
+    
+    if (kpiReviewStatus) {
+      kpiReviewStatus.textContent = data.reviewStatus;
+      if (data.complianceFlags.length > 0) {
+        kpiReviewStatus.style.background = 'var(--critical-bg)';
+        kpiReviewStatus.style.color = 'var(--critical-accent)';
+        kpiReviewStatus.style.border = '1px solid var(--critical-border)';
+      } else {
+        kpiReviewStatus.style.background = 'var(--success-bg)';
+        kpiReviewStatus.style.color = 'var(--success-accent)';
+        kpiReviewStatus.style.border = '1px solid var(--success-border)';
+      }
+    }
 
     if (kpiEngine) {
-      const lat = data.groqMeta?.latencyMs || 84;
-      const isLive = data.groqMeta?.isLiveCloud ? 'Live' : 'LPU';
-      kpiEngine.textContent = `${data.modelId.includes('llama') ? 'Groq ' + isLive : 'Aegis'} (⚡ ${lat}ms)`;
+      const lat = data.groqMeta?.latencyMs || 12;
+      const isLive = data.groqMeta?.isLiveCloud ? 'Cloud' : 'LPU';
+      kpiEngine.textContent = `${data.modelId.includes('llama') ? 'Groq ' + isLive : 'Aegis Rules'} (~${lat}ms)`;
     }
 
     // Update Tab count badges
-    violationsTabCount.textContent = data.complianceFlags.length;
-    absenceTabCount.textContent = data.absenceFlags.length;
-    precedentsTabCount.textContent = data.precedents.length;
+    if (violationsTabCount) violationsTabCount.textContent = data.complianceFlags.length;
+    if (absenceTabCount) absenceTabCount.textContent = data.absenceFlags.length;
+    if (precedentsTabCount) precedentsTabCount.textContent = data.precedents.length;
 
     // Render Highlights in Left Pane
     renderDocumentHighlights();
@@ -276,7 +374,7 @@ async function runComplianceScan() {
     // Render Privacy & Egress Inspector in Tab 4
     await renderPrivacyInspector(data);
 
-    showToast(`Scan complete: ${data.complianceFlags.length} violations, ${data.absenceFlags.length} missing disclosures flagged`, 'info');
+    showToast(`Compliance review complete: ${data.complianceFlags.length} violation(s), ${data.absenceFlags.length} missing clause(s)`, 'info');
   } catch (err) {
     console.error('Scan execution error:', err);
     showToast('Inspection failed: ' + err.message, 'danger');
@@ -286,7 +384,7 @@ async function runComplianceScan() {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-sm">
         <polygon points="5 3 19 12 5 21 5 3"/>
       </svg>
-      <span>Run AI Compliance Scan</span>
+      <span>Run Compliance Review</span>
     `;
   }
 }
@@ -301,18 +399,18 @@ async function checkGroqStatus() {
     if (data.isConfigured) {
       if (groqStatusLabel) {
         groqStatusLabel.textContent = 'Groq Cloud Active';
-        groqStatusLabel.style.color = '#34D399';
+        groqStatusLabel.style.color = 'var(--success-accent)';
       }
       if (groqModalStatus) {
         groqModalStatus.innerHTML = `<span>Status: Live Groq Cloud Active (${data.maskedKey})</span>`;
       }
     } else {
       if (groqStatusLabel) {
-        groqStatusLabel.textContent = 'Groq Ready';
-        groqStatusLabel.style.color = '#FBBF24';
+        groqStatusLabel.textContent = 'Groq LPU';
+        groqStatusLabel.style.color = 'var(--warning-accent)';
       }
       if (groqModalStatus) {
-        groqModalStatus.innerHTML = `<span>Status: Operating in Groq LPU Simulation mode (~120ms)</span>`;
+        groqModalStatus.innerHTML = `<span>Status: Operating in Groq LPU Simulation mode (~12ms)</span>`;
       }
     }
   } catch (e) {
@@ -374,8 +472,8 @@ async function clearGroqKey() {
  */
 function setViewMode(mode) {
   currentMode = mode;
-  toggleRehydrated.classList.toggle('active', mode === 'rehydrated');
-  toggleMasked.classList.toggle('active', mode === 'masked');
+  if (toggleRehydrated) toggleRehydrated.classList.toggle('active', mode === 'rehydrated');
+  if (toggleMasked) toggleMasked.classList.toggle('active', mode === 'masked');
   renderDocumentHighlights();
 }
 
@@ -384,7 +482,7 @@ function setViewMode(mode) {
  */
 function renderDocumentHighlights() {
   if (!lastInspectionResult) {
-    documentViewer.textContent = currentRawText;
+    if (documentViewer) documentViewer.textContent = currentRawText;
     return;
   }
 
@@ -393,7 +491,7 @@ function renderDocumentHighlights() {
   const flags = lastInspectionResult.complianceFlags;
 
   if (flags.length === 0 && !isMasked) {
-    documentViewer.textContent = displayText;
+    if (documentViewer) documentViewer.textContent = displayText;
     return;
   }
 
@@ -407,14 +505,14 @@ function renderDocumentHighlights() {
 
   let escapedText = escapeHtml(displayText);
 
-  // If in masked view, highlight PII tokens with cyan badges
+  // If in masked view, highlight PII tokens with clean privacy pills
   if (isMasked) {
     escapedText = escapedText.replace(/(\[(?:CLIENT|SSN|ACCOUNT|EMAIL|PHONE|ADDRESS|AMOUNT)_\d+\])/g, 
       '<span class="pii-token-highlight">$1</span>'
     );
   }
 
-  // Highlight verbatim violations in red
+  // Highlight verbatim violations in natural legal redline styling
   for (const flag of flags) {
     const targetPassage = isMasked ? flag.masked_passage : flag.passage;
     if (targetPassage && targetPassage.length > 5) {
@@ -426,11 +524,13 @@ function renderDocumentHighlights() {
     }
   }
 
-  documentViewer.innerHTML = escapedText;
+  if (documentViewer) {
+    documentViewer.innerHTML = escapedText;
+  }
 
   // Add click handlers on highlights to focus corresponding card
   document.querySelectorAll('.violation-highlight').forEach(el => {
-    el.addEventListener('click', (e) => {
+    el.addEventListener('click', () => {
       const flagId = el.dataset.flagId;
       focusViolationCard(flagId);
     });
@@ -441,24 +541,26 @@ function renderDocumentHighlights() {
  * Render Violations List in Tab 1
  */
 function renderViolationsList(flags) {
+  if (!violationsList) return;
+
   if (!flags || flags.length === 0) {
     violationsList.innerHTML = `
-      <div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:36px;height:36px;color:var(--accent-emerald);">
+      <div class="empty-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:32px;height:32px;color:var(--success-accent);margin-bottom:8px;">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-        <p style="color:var(--accent-emerald);font-weight:600;">100% Compliant: Zero rule violations detected!</p>
+        <p style="color:var(--success-accent);font-weight:600;">100% Compliant: Zero regulatory rule violations detected.</p>
       </div>
     `;
     return;
   }
 
-  violationsList.innerHTML = flags.map((flag, idx) => {
+  violationsList.innerHTML = flags.map(flag => {
     const sevClass = flag.severity === 'CRITICAL' ? 'sev-critical' : (flag.severity === 'HIGH' ? 'sev-high' : 'sev-medium');
     const cardBorder = flag.severity === 'CRITICAL' ? 'card-critical' : (flag.severity === 'HIGH' ? 'card-high' : 'card-medium');
 
     return `
-      <div class="review-card ${cardBorder}" id="card-${flag.flag_id}" data-flag-id="${flag.flag_id}">
+      <article class="review-card ${cardBorder}" id="card-${flag.flag_id}" data-flag-id="${flag.flag_id}">
         <div class="card-header-row">
           <div style="display:flex;align-items:center;gap:8px;">
             <span class="rule-tag rule-tag-red">${flag.rule_id}</span>
@@ -478,13 +580,13 @@ function renderViolationsList(flags) {
         <div class="card-footer-meta">
           <span class="offset-badge">Offsets: [${flag.offsets.start}..${flag.offsets.end}]</span>
           <span class="verified-seal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="icon-xs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="icon-xs">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            Verbatim Grounded (100% Verified)
+            100% Verbatim Grounded
           </span>
         </div>
-      </div>
+      </article>
     `;
   }).join('');
 
@@ -518,12 +620,14 @@ function scrollToHighlight(flagId) {
  */
 function focusViolationCard(flagId) {
   // Ensure tab 1 is active
-  document.querySelector('[data-tab="violationsTab"]').click();
+  const violationsTabBtn = document.querySelector('[data-tab="violationsTab"]');
+  if (violationsTabBtn) violationsTabBtn.click();
+
   const card = document.getElementById(`card-${flagId}`);
   if (card) {
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    card.style.borderColor = 'var(--accent-red)';
-    card.style.boxShadow = 'var(--shadow-glow-red)';
+    card.style.borderColor = 'var(--critical-accent)';
+    card.style.boxShadow = 'var(--shadow-elevated)';
     setTimeout(() => {
       card.style.borderColor = '';
       card.style.boxShadow = '';
@@ -535,17 +639,19 @@ function focusViolationCard(flagId) {
  * Render Absence List in Tab 2
  */
 function renderAbsenceList(absenceFlags) {
+  if (!absenceList) return;
+
   if (!absenceFlags || absenceFlags.length === 0) {
     absenceList.innerHTML = `
-      <div class="empty-state">
-        <p style="color:var(--accent-emerald);">All mandatory legal disclosures are present and satisfied.</p>
+      <div class="empty-placeholder">
+        <p style="color:var(--success-accent);font-weight:600;">All mandatory statutory disclosures are present.</p>
       </div>
     `;
     return;
   }
 
   absenceList.innerHTML = absenceFlags.map(item => `
-    <div class="review-card card-high">
+    <article class="review-card card-high">
       <div class="card-header-row">
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="rule-tag rule-tag-amber">${item.disclosure_id}</span>
@@ -563,17 +669,17 @@ function renderAbsenceList(absenceFlags) {
         "${escapeQuotes(item.required_text)}"
       </div>
 
-      <div class="precedent-notes-box" style="border-left-color:var(--accent-amber);color:#FEF3C7;background:rgba(245,158,11,0.08);">
+      <div class="precedent-notes-box">
         <strong>Remediation:</strong> ${item.remediation}
       </div>
 
       <div class="card-footer-meta">
-        <span>Closest Text Match: "${item.closest_text_passage.slice(0, 50)}..."</span>
-        <span class="similarity-chip" style="color:var(--accent-amber);">
+        <span>Closest Text Match: "${item.closest_text_passage.slice(0, 48)}..."</span>
+        <span class="similarity-chip" style="color:var(--warning-accent);">
           Semantic Distance Score: <strong>${item.semantic_distance_score}</strong> (Absent)
         </span>
       </div>
-    </div>
+    </article>
   `).join('');
 }
 
@@ -581,8 +687,10 @@ function renderAbsenceList(absenceFlags) {
  * Render Historical Precedents in Tab 3
  */
 function renderPrecedentsList(precedents) {
+  if (!precedentsList) return;
+
   if (!precedents || precedents.length === 0) {
-    precedentsList.innerHTML = `<div class="empty-state"><p>No matching historical precedents found.</p></div>`;
+    precedentsList.innerHTML = `<div class="empty-placeholder"><p>No matching historical precedents found.</p></div>`;
     return;
   }
 
@@ -590,14 +698,14 @@ function renderPrecedentsList(precedents) {
     const verdictClass = prec.decision === 'REJECTED' ? 'verdict-rejected' : 'verdict-approved';
 
     return `
-      <div class="review-card">
+      <article class="review-card">
         <div class="card-header-row">
           <span class="card-title">${prec.document_title}</span>
           <span class="verdict-badge ${verdictClass}">${prec.decision}</span>
         </div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span class="precedent-officer">${prec.officer_name} · ${prec.date}</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);">
+          <span>${prec.officer_name} · ${prec.date}</span>
           <span class="similarity-chip">Similarity Score: ${(prec.similarity_score * 100).toFixed(0)}%</span>
         </div>
 
@@ -611,14 +719,14 @@ function renderPrecedentsList(precedents) {
         </div>
 
         <div class="card-footer-meta">
-          <span style="display:flex;gap:4px;">
+          <div style="display:flex;gap:4px;">
             ${prec.tags.map(t => `<span class="offset-badge">${t}</span>`).join('')}
-          </span>
-          <span style="color:var(--accent-purple);font-size:0.68rem;font-weight:600;">
-            [READ-ONLY DISPLAY GUARDRAIL VERIFIED]
+          </div>
+          <span style="color:var(--text-muted);font-size:0.7rem;font-weight:600;">
+            [DISPLAY-ONLY GUIDANCE]
           </span>
         </div>
-      </div>
+      </article>
     `;
   }).join('');
 }
@@ -627,6 +735,8 @@ function renderPrecedentsList(precedents) {
  * Render Privacy Wall & Egress Inspector in Tab 4
  */
 async function renderPrivacyInspector(data) {
+  if (!vaultMappingViewer || !outboundPayloadViewer) return;
+
   // 1. Vault tokens
   const tokens = data.vaultSummary.tokensMapped;
   if (!tokens || tokens.length === 0) {
@@ -655,8 +765,8 @@ async function renderPrivacyInspector(data) {
  * Submit Human Compliance Officer Decision
  */
 async function submitOfficerDecision(decision) {
-  const officerName = officerNameInput.value.trim() || 'Officer Sarah Jenkins';
-  const notes = officerNotesInput.value.trim() || `Officer ruling: ${decision} based on SEC/FINRA compliance scan.`;
+  const officerName = officerNameInput ? officerNameInput.value.trim() : 'Sarah Jenkins, Chief Compliance Officer';
+  const notes = (officerNotesInput && officerNotesInput.value.trim()) || `Officer determination: ${decision} based on SEC/FINRA compliance review.`;
   const flagsCount = lastInspectionResult ? lastInspectionResult.complianceFlags.length : 0;
 
   try {
@@ -674,10 +784,20 @@ async function submitOfficerDecision(decision) {
 
     const data = await res.json();
     if (data.success) {
-      kpiReviewStatus.textContent = decision;
-      kpiReviewStatus.className = decision === 'REJECTED' ? 'kpi-val text-red' : 'kpi-val text-emerald';
+      if (kpiReviewStatus) {
+        kpiReviewStatus.textContent = decision;
+        if (decision === 'REJECTED') {
+          kpiReviewStatus.style.background = 'var(--critical-bg)';
+          kpiReviewStatus.style.color = 'var(--critical-accent)';
+          kpiReviewStatus.style.border = '1px solid var(--critical-border)';
+        } else {
+          kpiReviewStatus.style.background = 'var(--success-bg)';
+          kpiReviewStatus.style.color = 'var(--success-accent)';
+          kpiReviewStatus.style.border = '1px solid var(--success-border)';
+        }
+      }
 
-      showToast(`Document successfully ${decision} by ${officerName}!`, decision === 'REJECTED' ? 'danger' : 'success');
+      showToast(`Document successfully ${decision} by ${officerName}`, decision === 'REJECTED' ? 'danger' : 'success');
       await loadDecisionsAudit();
     }
   } catch (err) {
@@ -690,12 +810,14 @@ async function submitOfficerDecision(decision) {
  * Load Decision Audit Trail in Tab 5
  */
 async function loadDecisionsAudit() {
+  if (!auditList) return;
+
   try {
     const res = await fetch('/api/decisions');
     const data = await res.json();
 
     if (!data.decisions || data.decisions.length === 0) {
-      auditList.innerHTML = `<div class="empty-state"><p>No recorded officer decisions yet.</p></div>`;
+      auditList.innerHTML = `<div class="empty-placeholder"><p>No historical officer determinations recorded yet.</p></div>`;
       return;
     }
 
@@ -705,12 +827,12 @@ async function loadDecisionsAudit() {
       const verdictClass = isReject ? 'verdict-rejected' : 'verdict-approved';
 
       return `
-        <div class="review-card ${borderClass}">
+        <article class="review-card ${borderClass}">
           <div class="card-header-row">
             <span class="card-title">${d.decisionId} · ${d.documentId}</span>
             <span class="verdict-badge ${verdictClass}">${d.decision}</span>
           </div>
-          <div style="font-size:0.78rem;color:var(--text-muted);">
+          <div style="font-size:0.75rem;color:var(--text-muted);">
             Officer: <strong>${d.officerName}</strong> · ${new Date(d.timestamp).toLocaleString()}
           </div>
           <div class="card-reason">
@@ -718,9 +840,9 @@ async function loadDecisionsAudit() {
           </div>
           <div class="card-footer-meta">
             <span>Violations at Decision: ${d.flagsCount}</span>
-            <span class="verified-seal">✓ HUMAN_AUTHORITY_VERIFIED</span>
+            <span class="verified-seal">✓ SUPERVISORY_ATTESTATION_RECORDED</span>
           </div>
-        </div>
+        </article>
       `;
     }).join('');
   } catch (e) {
@@ -732,9 +854,10 @@ async function loadDecisionsAudit() {
  * Update Document Stats
  */
 function updateDocStats() {
+  if (!docStats) return;
   const len = currentRawText.length;
   const sections = currentRawText.split(/\n\s*\n/).filter(s => s.trim().length > 0).length;
-  docStats.textContent = `Length: ${len} characters · ${sections} sections`;
+  docStats.textContent = `Length: ${len} characters · ${sections} clauses`;
 }
 
 /**
@@ -750,6 +873,8 @@ function escapeQuotes(str) {
  */
 function showToast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
+  if (!container) return;
+
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
@@ -758,9 +883,9 @@ function showToast(message, type = 'info') {
 
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateY(10px)';
-    setTimeout(() => toast.remove(), 300);
-  }, 4000);
+    toast.style.transform = 'translateY(8px)';
+    setTimeout(() => toast.remove(), 250);
+  }, 3500);
 }
 
 // Start application when DOM loaded
