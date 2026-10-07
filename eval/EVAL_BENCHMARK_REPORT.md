@@ -1,6 +1,6 @@
 # Compliance Inspection AI — Empirical Evaluation Benchmark Report
 
-Generated at: 2026-10-06T15:46:56.601Z  
+Generated at: 2026-10-07T18:25:41.862Z  
 Corpus Size: **25 Test Documents** (including 6 Clean Controls and 19 Adversarial/Planted Violation Documents)  
 Evaluated Rules: **10 SEC/FINRA Compliance Rules**
 
